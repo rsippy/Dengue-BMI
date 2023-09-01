@@ -183,23 +183,3 @@ aab2$p <- coef(summary(a_ad_bm))[,4]
 colnames(aab2)[1:3] <- c("Estimate", "LL", "UL")
 rownames(aab2) <- c("Intercept", "BMI", "Age", "Gender")
 aab2
-
-## Figure
-new_bm <- with(bm_adult, data.frame(Age = rep(mean(Age), 107), 
-                                    Gender = rep("Fem", 107), 
-                                    BMI = seq(17.5, 70.5, by = 0.5)))
-new_bm2 <- rbind(new_bm, data.frame(Age = rep(mean(bm_adult$Age), 107), 
-                                    Gender = rep("Masc", 107), 
-                                    BMI = seq(17.5, 70.5, by = 0.5)))
-
-new_bm3 <- cbind(new_bm2, predict(a_ad_bm, newdata = new_bm2, type = "link",
-                                    se = TRUE))
-new_bm3 <- within(new_bm3, {
-  PredictedProb <- plogis(fit)
-  LL <- plogis(fit - (1.96 * se.fit))
-  UL <- plogis(fit + (1.96 * se.fit))
-})
-
-ggplot(new_bm3, aes(x = BMI, y = PredictedProb)) + 
-  geom_ribbon(aes(ymin = LL, ymax = UL, fill = Gender), alpha = 0.2) + 
-  geom_line(aes(color = Gender), size = 1)
